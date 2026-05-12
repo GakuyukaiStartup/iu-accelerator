@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iUアクセラレーションプログラム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --white: #ffffff;
+    --off-white: #f9f8f6;
+    --border: #e8e5e0;
+    --text: #1a1816;
+    --muted: #8a8580;
+    --accent: #1a1816;
+    --green: #2d5a3d;
+    --serif: 'DM Serif Display', serif;
+    --sans: 'Noto Sans JP', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--white);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex; gap: 32px; list-style: none; margin-left: auto; margin-right: 32px;
+  }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500;
+    color: var(--white);
+    background: var(--text);
+    padding: 9px 20px;
+    border-radius: 2px;
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: opacity 0.2s;
+  }
+  .nav-cta:hover { opacity: 0.8; }
+
+  /* HERO */
+  .hero {
+    padding: 180px 48px 120px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: end;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-left {}
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 28px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 54px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 28px;
+    font-weight: 400;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--green);
+  }
+  .hero-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.9;
+    font-weight: 300;
+    max-width: 420px;
+    margin-bottom: 40px;
+  }
+  .hero-btns {
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .btn-dark {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--text);
+    color: var(--white);
+    padding: 14px 28px;
+    font-size: 13px; font-weight: 500;
+    letter-spacing: 0.04em;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .btn-dark:hover { opacity: 0.75; }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 24px;
+    font-size: 13px; font-weight: 400;
+    letter-spacing: 0.03em;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-outline:hover { background: var(--off-white); }
+  .btn-instagram {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 14px 24px;
+    font-size: 13px; font-weight: 400;
+    letter-spacing: 0.03em;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  .btn-instagram:hover { background: var(--off-white); }
+
+  .hero-right {}
+  .hero-stats {
+    display: flex; flex-direction: column; gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; text-align: right; }
+  .stat-row > div { text-align: right; }
+
+  /* WRAPPER */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* SECTION COMMON */
+  section { border-bottom: 1px solid var(--border); }
+  .section-inner { padding: 96px 48px; max-width: 1200px; margin: 0 auto; }
+  .section-header {
+    display: flex; align-items: baseline; gap: 24px;
+    margin-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+  .section-index {
+    font-size: 11px; color: var(--muted); letter-spacing: 0.1em; font-weight: 300;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: 30px; font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* FEATURES */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .feature-card {
+    background: var(--white);
+    padding: 40px;
+  }
+  .feature-num {
+    font-family: var(--serif);
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  .feature-card h3 {
+    font-size: 16px; font-weight: 500;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .feature-card p {
+    font-size: 13px; color: var(--muted);
+    line-height: 1.9; font-weight: 300;
+  }
+
+  /* STEPS */
+  .steps-list { display: flex; flex-direction: column; }
+  .step-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 48px;
+    padding: 36px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+  }
+  .step-row:last-child { border-bottom: none; }
+  .step-left {}
+  .step-phase {
+    font-size: 11px; color: var(--muted); letter-spacing: 0.08em; font-weight: 300; margin-bottom: 6px;
+  }
+  .step-num {
+    font-family: var(--serif);
+    font-size: 38px; color: var(--text);
+    line-height: 1;
+    font-style: italic;
+  }
+  .step-right {}
+  .step-right h3 { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
+  .step-right p { font-size: 13px; color: var(--muted); line-height: 1.9; font-weight: 300; max-width: 520px; }
+
+  /* OUTPUTS */
+  .outputs-grid {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .output-chip {
+    display: inline-flex; align-items: center;
+    padding: 8px 18px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px; font-weight: 300;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  /* INVESTMENT */
+  .invest-top {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 64px;
+  }
+  .invest-card {
+    padding: 32px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .invest-tag {
+    font-size: 10px; letter-spacing: 0.1em; color: var(--muted); font-weight: 500;
+    margin-bottom: 14px; text-transform: uppercase;
+  }
+  .invest-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 10px; line-height: 1.4; }
+  .invest-card p { font-size: 13px; color: var(--muted); line-height: 1.8; font-weight: 300; }
+
+  .results-label {
+    font-size: 11px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase;
+    margin-bottom: 20px; font-weight: 500;
+  }
+  .results-list { display: flex; flex-direction: column; }
+  .result-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-left {}
+  .result-name { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+  .result-stage { font-size: 12px; color: var(--muted); font-weight: 300; }
+  .result-amount {
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--green);
+    font-style: italic;
+  }
+
+  /* FLOW */
+  .flow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .flow-card {
+    background: var(--white);
+    padding: 40px 36px;
+  }
+  .flow-step-num {
+    font-family: var(--serif); font-style: italic;
+    font-size: 40px; color: var(--border);
+    line-height: 1; margin-bottom: 20px;
+  }
+  .flow-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .flow-card p { font-size: 13px; color: var(--muted); line-height: 1.9; font-weight: 300; }
+
+  /* CTA */
+  .cta-section {
+    background: var(--text);
+    padding: 120px 48px;
+    text-align: center;
+  }
+  .cta-tag {
+    font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.4);
+    text-transform: uppercase; margin-bottom: 24px;
+  }
+  .cta-section h2 {
+    font-family: var(--serif);
+    font-size: 42px; font-weight: 400;
+    color: var(--white);
+    margin-bottom: 16px; line-height: 1.2;
+  }
+  .cta-section p {
+    font-size: 14px; color: rgba(255,255,255,0.55);
+    margin-bottom: 48px; font-weight: 300; line-height: 1.9;
+  }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-white {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--white);
+    color: var(--text);
+    padding: 16px 32px;
+    font-size: 13px; font-weight: 500;
+    border-radius: 2px;
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: opacity 0.2s;
+  }
+  .btn-white:hover { opacity: 0.88; }
+  .btn-outline-white {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.8);
+    padding: 16px 28px;
+    font-size: 13px; font-weight: 400;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .btn-outline-white:hover { border-color: rgba(255,255,255,0.6); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: Georgia, serif; font-size: 15px; font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--text); text-decoration: none;
+  }
+  .footer-note {
+    font-size: 12px; color: var(--muted); font-weight: 300;
+  }
+
+  /* FADE IN */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up {
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.45s; }
+
+  /* INSTAGRAM ICON */
+  .ig-icon {
+    width: 16px; height: 16px; vertical-align: -2px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 860px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 120px 24px 80px; gap: 48px; }
+    .hero h1 { font-size: 38px; }
+    .section-inner { padding: 64px 24px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .step-row { grid-template-columns: 1fr; gap: 12px; }
+    .invest-top { grid-template-columns: 1fr; }
+    .flow-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
+    .cta-section { padding: 80px 24px; }
+    .cta-section h2 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">iU アクセラ</a>
+  <ul class="nav-links">
+    <li><a href="#features">特徴</a></li>
+    <li><a href="#steps">ステップ</a></li>
+    <li><a href="#investment">出資実績</a></li>
+    <li><a href="#flow">参加の流れ</a></li>
+  </ul>
+  <a href="#entry" class="nav-cta">エントリー →</a>
+</nav>
+
+<!-- HERO -->
+<div style="border-bottom: 1px solid var(--border);">
+  <div class="hero">
+    <div class="hero-left">
+      <span class="hero-tag fade-up">iU Acceleration Program</span>
+      <h1 class="fade-up delay-1">自分らしい<br>プロダクトを、<br><em>ここから。</em></h1>
+      <p class="hero-desc fade-up delay-2">
+        学年・学部・学校を問わず、学生であれば誰でも参加可能。<br>
+        アイデア創出からプロダクト開発・ユーザー検証・事業化まで、<br>
+        一気通貫で取り組む超実践型の起業プログラムです。
+      </p>
+      <div class="hero-btns fade-up delay-3">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdiRelpLEw6fCQt5A6-XrLosYFskz8-fY8tjneeRvHnex6PTA/viewform?usp=sharing&ouid=100971583425020199610" target="_blank" class="btn-dark">参加エントリー →</a>
+        <a href="https://www.instagram.com/innopro.accel/" target="_blank" class="btn-instagram">
+          <svg class="ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="17" cy="7" r="1.2" fill="currentColor"/>
+          </svg>
+          Instagram
+        </a>
+      </div>
+    </div>
+    <div class="hero-right fade-up delay-4">
+      <div class="hero-stats">
+        <div class="stat-row">
+          <span class="stat-label">調達実績</span>
+          <div>
+            <div class="stat-value">3,550<span style="font-size:16px;">万円+</span></div>
+            <div class="stat-sub">プレシードラウンド累計</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">運営実績</span>
+          <div>
+            <div class="stat-value">2022<span style="font-size:16px;">年〜</span></div>
+            <div class="stat-sub">累計参加者数 200名+</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">参加資格</span>
+          <div>
+            <div class="stat-value" style="font-size:16px;">ビジネスを志す学生</div>
+            <div class="stat-sub">学年・学部・学校 不問</div>
+          </div>
+        </div>
+        <div class="stat-row" style="background: var(--off-white);">
+          <span class="stat-label">プログラムステップ</span>
+          <div>
+            <div class="stat-value">6<span style="font-size:16px;">フェーズ</span></div>
+            <div class="stat-sub">ビジョン設計 → 事業化</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-index">01</span>
+      <h2 class="section-title">プログラムの特徴</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-num">01</div>
+        <h3>超実践型の起業プログラム</h3>
+        <p>アイデア創出にとどまらず、プロダクト開発・ユーザー検証・事業化までを一気通貫で実施。スタートアップ立ち上げのリアルなプロセスを実践形式で経験できます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">02</div>
+        <h3>プロダクト起点の事業開発</h3>
+        <p>スタートアップ型のプロダクトづくりをワークショップ形式で推進。短期間で仮説検証と改善を回し、事業の解像度を高めます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">03</div>
+        <h3>メンタリング支援</h3>
+        <p>起業家・投資家・事業開発人材など、多様なメンターが伴走。戦略・プロダクト・ビジネスモデルの各観点から成長を支援します。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">04</div>
+        <h3>コミュニティ形成</h3>
+        <p>参加者同士に加え、スタートアップ関係者や外部プレイヤーとの接点を創出。オンライン・オフライン双方で交流・共創の機会を提供します。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAM STEPS -->
+<section id="steps">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-index">02</span>
+      <h2 class="section-title">プログラムステップ</h2>
+    </div>
+    <div class="steps-list">
+      <div class="step-row">
+        <div class="step-left">
+          <div class="step-phase">Phase</div>
+          <div class="step-num">01</div>
+        </div>
+        <div class="step-right">
+          <h3>ビジョン設計</h3>
+          <p>自分が実現したい世界観・価値観を言語化。プロダクトの軸となるビジョンを描き、起業の目的を明確にします。</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-left">
+          <div class="step-phase">Phase</div>
+          <div class="step-num">02</div>
+        </div>
+        <div class="step-right">
+          <h3>プロダクトアイデア創出</h3>
+          <p>ワークショップ形式でプロダクトアイデアを発散・収束。課題起点でユニークな解決策を導き出します。</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-left">
+          <div class="step-phase">Phase</div>
+          <div class="step-num">03</div>
+        </div>
+        <div class="step-right">
+          <h3>CPF検証（Customer Problem Fit）</h3>
+          <p>ペルソナ設計・ユーザーインタビューを通じて、課題の解像度を高めます。仮説を素早く検証する習慣を養います。</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-left">
+          <div class="step-phase">Phase</div>
+          <div class="step-num">04</div>
+        </div>
+        <div class="step-right">
+          <h3>PSF検証（Problem Solution Fit）</h3>
+          <p>プロトタイプを用いたソリューション検証を実施。ユーザーフィードバックをもとに改善サイクルを回します。</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-left">
+          <div class="step-phase">Phase</div>
+          <div class="step-num">05</div>
+        </div>
+        <div class="step-right">
+          <h3>グロースプラン策定</h3>
+          <p>KPI設計・初期ユーザー獲得戦略を立案。事業成長のロードマップを描き、投資家向けピッチに備えます。</p>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-left">
+          <div class="step-phase">Phase</div>
+          <div class="step-num">06</div>
+        </div>
+        <div class="step-right">
+          <h3>ファイナンス設計</h3>
+          <p>事業計画・資本政策を設計し、投資家向けピッチに挑戦。シード出資検討へと接続する一体型の支援体制を整備しています。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTPUTS -->
+<section>
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-index">03</span>
+      <h2 class="section-title">主なアウトプット</h2>
+    </div>
+    <div class="outputs-grid">
+      <span class="output-chip">ビジョンピッチ</span>
+      <span class="output-chip">アイデアピッチ</span>
+      <span class="output-chip">初期ユーザー獲得</span>
+      <span class="output-chip">プロトタイプ制作</span>
+      <span class="output-chip">KPI設計</span>
+      <span class="output-chip">事業計画 / 資本政策設計</span>
+      <span class="output-chip">投資家向けピッチ</span>
+    </div>
+  </div>
+</section>
+
+<!-- THEMES -->
+<section>
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-index">04</span>
+      <h2 class="section-title">対象テーマ領域</h2>
+    </div>
+    <div class="outputs-grid">
+      <span class="output-chip">スタートアップ</span>
+      <span class="output-chip">スモールビジネス</span>
+      <span class="output-chip">受託事業</span>
+      <span class="output-chip">AI活用事業</span>
+      <span class="output-chip">その他あらゆる領域</span>
+    </div>
+    <p style="margin-top: 24px; font-size: 13px; color: var(--muted); font-weight: 300; line-height: 1.9;">領域を問わず、自分らしい起業テーマで挑戦可能です。</p>
+  </div>
+</section>
+
+<!-- INVESTMENT -->
+<section id="investment">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-index">05</span>
+      <h2 class="section-title">出資体制・実績</h2>
+    </div>
+    <div class="invest-top">
+      <div class="invest-card">
+        <div class="invest-tag">投資主体 01</div>
+        <h3>i 株式会社</h3>
+        <p>iU生の小規模起業を支えるために設立された事業会社。上限約300万円程度のエクイティ出資を実施します。</p>
+      </div>
+      <div class="invest-card">
+        <div class="invest-tag">投資主体 02</div>
+        <h3>合同会社 iU Z investment</h3>
+        <p>U-30のZ世代起業家向けシードVC。シードステージのエクイティ出資を中心に、若手起業家を支援します。</p>
+      </div>
+      <div class="invest-card">
+        <div class="invest-tag">投資主体 03</div>
+        <h3>iU Z Fund</h3>
+        <p>約3億円規模のファンドを組成予定。学校法人電子学園・連携企業などからLP出資を募る構想です。</p>
+      </div>
+    </div>
+
+    <div class="results-label">調達実績</div>
+    <div class="results-list">
+      <div class="result-row">
+        <div class="result-left">
+          <div class="result-name">MustPost — お題投稿型SNS</div>
+          <div class="result-stage">プレシードラウンド</div>
+        </div>
+        <div class="result-amount">¥10,000,000</div>
+      </div>
+      <div class="result-row">
+        <div class="result-left">
+          <div class="result-name">Givearth — ゼロ円寄付アプリ</div>
+          <div class="result-stage">プレシードラウンド</div>
+        </div>
+        <div class="result-amount">¥10,000,000</div>
+      </div>
+      <div class="result-row">
+        <div class="result-left">
+          <div class="result-name">推しメーター — 推し活可視化アプリ</div>
+          <div class="result-stage">プレシードラウンド</div>
+        </div>
+        <div class="result-amount">¥15,500,000</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLOW -->
+<section id="flow">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-index">06</span>
+      <h2 class="section-title">参加の流れ</h2>
+    </div>
+    <div class="flow-grid">
+      <div class="flow-card">
+        <div class="flow-step-num">01</div>
+        <h3>ミートアップへ参加</h3>
+        <p>オンラインミートアップでプログラム概要・過去事例を理解。参加者同士の交流機会としても活用できます。</p>
+      </div>
+      <div class="flow-card">
+        <div class="flow-step-num">02</div>
+        <h3>エントリーピッチ</h3>
+        <p>ビジネスアイデアや関心テーマについてピッチを実施。アイデア段階でも参加可能で、完成度は問いません。</p>
+      </div>
+      <div class="flow-card">
+        <div class="flow-step-num">03</div>
+        <h3>プログラム参加</h3>
+        <p>メンタリングやワークショップを通じて、事業化に向けたプロダクト開発・検証を進めます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="entry">
+  <div class="cta-section">
+    <div class="cta-tag">Join Us</div>
+    <h2>挑戦したい方の<br>参加を歓迎します。</h2>
+    <p>
+      学年・学部・学校を問わず、学生であれば誰でも参加可能。<br>
+      起業志向のある方、アイデアを形にしたい方はぜひご参加ください。
+    </p>
+    <div class="cta-btns">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdiRelpLEw6fCQt5A6-XrLosYFskz8-fY8tjneeRvHnex6PTA/viewform?usp=sharing&ouid=100971583425020199610" target="_blank" class="btn-white">エントリーはこちら →</a>
+      <a href="https://www.instagram.com/innopro.accel/" target="_blank" class="btn-outline-white">
+        <svg class="ig-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="20" height="20" rx="6" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="17" cy="7" r="1.2" fill="currentColor"/>
+        </svg>
+        Instagram を見る
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">iU アクセラ</a>
+  <span class="footer-note">© 2025 iU Acceleration Program. All rights reserved.</span>
+</footer>
+
+</body>
+</html>
