@@ -76,15 +76,24 @@
   .nav-cta:hover { opacity: 0.8; }
 
   /* HERO */
+  .hero-wrap {
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    background-image:
+      linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.86)),
+      url('iu-campus.jpg');
+    background-size: cover;
+    background-position: center 30%;
+  }
   .hero {
     padding: 180px 48px 120px;
-    border-bottom: 1px solid var(--border);
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 80px;
     align-items: end;
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
   }
   .hero-left {}
   .hero-tag {
@@ -164,6 +173,8 @@
     border: 1px solid var(--border);
     border-radius: 4px;
     overflow: hidden;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px);
   }
   .stat-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -434,12 +445,18 @@
     width: 16px; height: 16px; vertical-align: -2px;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up { animation: none; opacity: 1; }
+    html { scroll-behavior: auto; }
+  }
+
   /* RESPONSIVE */
   @media (max-width: 860px) {
     nav { padding: 16px 24px; }
     .nav-links { display: none; }
     .hero { grid-template-columns: 1fr; padding: 120px 24px 80px; gap: 48px; }
     .hero h1 { font-size: 38px; }
+    .hero-wrap { background-position: center 20%; }
     .section-inner { padding: 64px 24px; }
     .features-grid { grid-template-columns: 1fr; }
     .step-row { grid-template-columns: 1fr; gap: 12px; }
@@ -466,7 +483,7 @@
 </nav>
 
 <!-- HERO -->
-<div style="border-bottom: 1px solid var(--border);">
+<div class="hero-wrap">
   <div class="hero">
     <div class="hero-left">
       <span class="hero-tag fade-up">iU Acceleration Program</span>
@@ -793,6 +810,4 @@
 </footer>
 
 </body>
-
 </html>
-
